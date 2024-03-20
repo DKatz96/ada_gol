@@ -7,7 +7,7 @@ procedure gol is
 	package CLI renames Ada.Command_Line;
 
 	type t_board_width  is mod 80;
-	type t_board_height is mod 40;
+	type t_board_height is mod 30;
 
 	type t_cell is (cell_alive, cell_dead);
 	type t_board is array (t_board_height, t_board_width) of t_cell; 
@@ -95,12 +95,16 @@ begin
 
 	init_board(boards(0), CLI.Argument(Number => 1));
 	draw_board(boards(0));
-	Put_Line(ESC & "[41A");
+	declare
+		line_height : string := Trim(Integer'image(Integer(t_board_height'last) + 2), Ada.Strings.Left);
+	begin
+	Put_Line(ESC & "[" & line_height & "A");
 	while true loop
 		calculate_next_state(boards(active_board), boards(active_board+1));
 		draw_board(boards(active_board+1));
 		active_board := active_board+1;
-		Put_Line(ESC & "[41A");
+		Put_Line(ESC & "[" & line_height & "A");
 		delay 0.1;
 	end loop;
+	end;
 end gol;
